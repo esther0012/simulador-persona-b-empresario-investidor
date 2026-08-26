@@ -376,8 +376,8 @@ function sendToNitroLeads(payload){
 }
 
 /* ============ META PIXEL ============ */
-var META_PIXEL_IDS = ['1761905857999115','528225679779379','2603396960109523','1121279896743307','837741104784878'];
-var LEAD_PIXEL_IDS = ['1761905857999115','528225679779379','1121279896743307','837741104784878'];
+var META_PIXEL_IDS = ['528225679779379'];
+var LEAD_PIXEL_IDS = ['528225679779379'];
 var leadFired = {};
 function leadKey(id){ return 'meta_lead_fired_'+id; }
 function alreadyFired(id){
@@ -447,7 +447,7 @@ function trackMetaStd(name, params){
 }
 function trackHighIntentPixel3(params){
   if (!window.fbq) return;
-  window.fbq('trackSingleCustom','2603396960109523','QuizHighIntentAnswer', params||{});
+  window.fbq('trackSingleCustom', SIGNUP_LEAD_PIXEL, 'QuizHighIntentAnswer', params||{});
 }
 
 /* ============ TIKTOK PIXEL ============ */
