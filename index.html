@@ -1289,10 +1289,6 @@ function submitLead(lead){
 
     var payload = generateCRMPayload(lead, state.answers, result, leadId);
 
-    // Evento Lead assim que a pessoa se cadastra (vale para aprovado e análise)
-    try { trackLeadSignup(leadId, { content_name:'quiz_lead', profile: result.profile }); }
-    catch(e){ console.error('[Meta Pixel] Lead no cadastro falhou:', e); }
-
     function finishSubmit(){
         if (finishSubmit.done) return;
         finishSubmit.done = true;
@@ -1301,6 +1297,10 @@ function submitLead(lead){
         var newRoute = qualified ? '/resultado/aprovado' : '/resultado/analise';
         try { history.pushState({}, '', newRoute); } catch(e){ console.warn('[Router] pushState indisponivel:', e.message); }
         try { trackPageview(location.protocol === 'file:' ? newRoute : location.pathname); } catch(e){}
+
+        try { trackLeadSignup(leadId, { content_name:'quiz_lead', profile: result.profile }); }
+        catch(e){ console.error('[Meta Pixel] Lead no resultado falhou:', e); }
+      
         if (qualified) renderApproved(); else renderAnalysis();
     }
 
@@ -1357,7 +1357,6 @@ function updateWaButton(errMsg){
 function fireApprovedTracking(){
   var lead = state.lead || {}, result = state.result || {profile:''};
   var dedupe = 'approved:' + (lead.leadId || lead.phoneE164 || lead.phone || lead.email);
-  trackMetaLead({ content_name:'qualified_lead', profile: result.profile }, dedupe);
   trackMetaStd('CompleteRegistration', { content_name:'quiz_complete', profile: result.profile });
   trackMetaCustom('Lead_MQL', { content_name:'mql_qualified', profile: result.profile });
   trackTikTokLead({ content_name:'qualified_lead', profile: result.profile }, dedupe);
