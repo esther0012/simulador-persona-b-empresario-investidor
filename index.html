@@ -326,6 +326,9 @@ input.err{border-color:var(--destructive)}
 
 input.valid{border-color:#16a34a}
 .err-msg .wa-retry{color:var(--auxiliary);font-weight:700;text-decoration:underline;font-size:12px;margin-left:4px}
+
+.wa-status{margin-top:8px;font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px;text-align:left}
+.wa-status.ok{color:#16a34a}
 </style>
 </head>
 <body>
@@ -1153,6 +1156,7 @@ function renderCapture(){
   + '<input id="fPhone" type="tel" placeholder="'+getMask(c.code).ph+'" autocomplete="tel">'
   + '<span class="ok hidden" id="pOk"></span></div>'
   + '</div><p class="err-msg hidden" id="ePhone"></p>'
+  + '<p class="wa-status hidden" id="waStatus"></p>'               
   + '<p class="hint">Usamos apenas para te enviar o plano e orientar o seu próximo passo.</p></div>'
   + '<div><label for="fEmail">E-mail</label><div class="field">'
   + '<i data-lucide="mail" class="ic" style="width:20px;height:20px"></i>'
@@ -1213,27 +1217,44 @@ var waTimer=null, waReqId=0;
 function updateSubmitState(){
   var btn = document.getElementById('submitBtn');
   if (!btn || state.submitting) return;
-  btn.disabled = formState.waStatus !== 'valid';
-  btn.textContent = formState.waStatus === 'checking' ? 'Verificando WhatsApp...' : 'Ver meu plano';
+  var st = formState.waStatus;
+  btn.disabled = st !== 'valid'; // só libera com "existe": "true"
+  if (st === 'checking'){
+    btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:20px;height:20px"></i> Validando seu WhatsApp...';
+  } else {
+    btn.textContent = 'Ver meu plano';
+  }
 }
 
 function setWaState(st, msg){
   // st: idle | checking | valid | invalid | error
   formState.waStatus = st;
   formState.waValid = st === 'valid' ? true : (st === 'invalid' ? false : null);
-  var phoneI = document.getElementById('fPhone'), ok = document.getElementById('pOk'), eP = document.getElementById('ePhone');
+  var phoneI = document.getElementById('fPhone'), ok = document.getElementById('pOk'),
+      eP = document.getElementById('ePhone'), ws = document.getElementById('waStatus');
   if (!phoneI || !ok || !eP) return;
+
+  // reset visual
   ok.classList.add('hidden'); ok.innerHTML = '';
   phoneI.classList.remove('err','valid');
   eP.classList.add('hidden');
+  if (ws){ ws.classList.add('hidden'); ws.classList.remove('ok'); ws.innerHTML = ''; }
 
   if (st === 'checking'){
     ok.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:20px;height:20px;color:var(--muted)"></i>';
     ok.classList.remove('hidden');
+    if (ws){
+      ws.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:14px;height:14px"></i> Estamos validando seu número de WhatsApp...';
+      ws.classList.remove('hidden');
+    }
   } else if (st === 'valid'){
     ok.innerHTML = '<i data-lucide="check-circle-2" style="width:20px;height:20px;color:#16a34a"></i>';
     ok.classList.remove('hidden');
     phoneI.classList.add('valid');
+    if (ws){
+      ws.innerHTML = '<i data-lucide="check" style="width:14px;height:14px"></i> WhatsApp confirmado! Cadastro liberado.';
+      ws.classList.add('ok'); ws.classList.remove('hidden');
+    }
   } else if (st === 'invalid'){
     showErr('ePhone', phoneI, msg || 'Número incorreto ou sem WhatsApp ativo. Confira o DDD e os dígitos.');
   } else if (st === 'error'){
