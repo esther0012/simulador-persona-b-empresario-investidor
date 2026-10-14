@@ -136,8 +136,9 @@ input.err{border-color:var(--destructive)}
   color:#8A8A8A;
   border:1px solid #C8C8C8;
   box-shadow:none;
-  opacity:1;
+  opacity:.6;
   cursor:not-allowed;
+  pointer-events:none;
 }
 
 /* Result */
@@ -1224,13 +1225,8 @@ var waTimer=null, waReqId=0;
 function updateSubmitState(){
   var btn = document.getElementById('submitBtn');
   if (!btn || state.submitting) return;
-  var st = formState.waStatus;
-  btn.disabled = st !== 'valid'; // só libera com "existe": "true"
-  if (st === 'checking'){
-    btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:20px;height:20px"></i> Validando seu WhatsApp...';
-  } else {
-    btn.textContent = 'Ver meu plano';
-  }
+  btn.disabled = formState.waStatus !== 'valid'; // só libera com "existe": "true"
+  btn.textContent = 'Ver meu plano';
 }
 
 function setWaState(st, msg){
@@ -1251,7 +1247,7 @@ function setWaState(st, msg){
     ok.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:20px;height:20px;color:var(--muted)"></i>';
     ok.classList.remove('hidden');
     if (ws){
-      ws.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:14px;height:14px"></i> Estamos validando seu número de WhatsApp...';
+      ws.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:14px;height:14px"></i> Verificando WhatsApp…';
       ws.classList.remove('hidden');
     }
   } else if (st === 'valid'){
@@ -1259,11 +1255,11 @@ function setWaState(st, msg){
     ok.classList.remove('hidden');
     phoneI.classList.add('valid');
     if (ws){
-      ws.innerHTML = '<i data-lucide="check" style="width:14px;height:14px"></i> WhatsApp confirmado! Cadastro liberado.';
+      ws.innerHTML = '<i data-lucide="check" style="width:14px;height:14px"></i> WhatsApp confirmado';
       ws.classList.add('ok'); ws.classList.remove('hidden');
     }
   } else if (st === 'invalid'){
-    showErr('ePhone', phoneI, msg || 'Número incorreto ou sem WhatsApp ativo. Confira o DDD e os dígitos.');
+    showErr('ePhone', phoneI, msg || 'Número inválido. Verifique o DDD e se o número tem WhatsApp ativo.');
   } else if (st === 'error'){
     phoneI.classList.add('err');
     eP.innerHTML = (msg || 'Não conseguimos verificar seu WhatsApp agora.')
