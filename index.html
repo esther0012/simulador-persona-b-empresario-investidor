@@ -131,7 +131,14 @@ input.err{border-color:var(--destructive)}
 .citem .nm{font-size:14px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .citem .dd{font-size:14px;color:var(--muted);font-weight:500}
 .btn-submit{width:100%;padding:16px;border-radius:12px;font-weight:700;font-size:16px;color:#fff;background:linear-gradient(135deg,#BA9356 0%,#d4ab6a 50%,#BA9356 100%);box-shadow:0 0 25px rgba(186,147,86,.3);display:flex;align-items:center;justify-content:center;gap:8px;transition:all .3s}
-.btn-submit:disabled{opacity:.6;cursor:not-allowed;box-shadow:none}
+.btn-submit:disabled{
+  background:#D4D4D4;
+  color:#8A8A8A;
+  border:1px solid #C8C8C8;
+  box-shadow:none;
+  opacity:1;
+  cursor:not-allowed;
+}
 
 /* Result */
 .res{width:100%;max-width:576px;margin:0 auto;padding:32px 16px 128px}
